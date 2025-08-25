@@ -1,0 +1,18 @@
+# Utility: Create users from a vault-encrypted variable file
+# Execution: ansible-navigator run users.yml -m stdout --vault-password-file=pass.txt
+
+- name: Manage users
+  hosts: all
+  vars_files:
+    - secret.yml
+  tasks:
+    - name: Create users from list
+      ansible.builtin.include_vars:
+        file: user_list.yml
+    - name: Add users
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        uid: "{{ item.uid }}"
+        groups: "{{ item.groups | default(omit) }}"
+        state: present
+      loop: "{{ users }}"
