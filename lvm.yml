@@ -1,0 +1,28 @@
+# Utility: Create LVM volume, format it, and mount
+# Execution: ansible-navigator run lvm.yml -m stdout
+
+- name: Configure LVM
+  hosts: all
+  tasks:
+    - name: Create a volume group
+      community.general.lvg:
+        vg: datavg
+        pvs: /dev/vdb
+
+    - name: Create logical volume
+      community.general.lvol:
+        vg: datavg
+        lv: datalv
+        size: 1G
+
+    - name: Create filesystem
+      community.general.filesystem:
+        fstype: ext4
+        dev: /dev/datavg/datalv
+
+    - name: Mount filesystem
+      ansible.posix.mount:
+        path: /data
+        src: /dev/datavg/datalv
+        fstype: ext4
+        state: mounted
