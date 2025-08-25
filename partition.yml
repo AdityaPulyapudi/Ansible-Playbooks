@@ -1,0 +1,37 @@
+# Utility: Partition, format, and mount new disks dynamically
+# Execution: ansible-navigator run partition.yml -m stdout
+
+- name: Partition disks
+  hosts: chennai
+  ignore_errors: yes
+  tasks:
+    - name: Check vdb
+      community.general.parted:
+        device: /dev/vdb
+        state: info
+      register: vdbinfo
+
+    - name: Create partition vdb1
+      community.general.parted:
+        device: /dev/vdb
+        number: 1
+        part_start: 1MiB
+        part_end: 1500MiB
+        state: present
+      when: vdbinfo is success
+      register: vdb1
+
+    - name: Format vdb1
+      community.general.filesystem:
+        device: /dev/vdb1
+        fstype: ext4
+        force: yes
+      when: vdb1 is success
+
+    - name: Mount vdb1
+      ansible.posix.mount:
+        src: /dev/vdb1
+        path: /newpart
+        fstype: ext4
+        state: mounted
+      when: vdb1 is success
