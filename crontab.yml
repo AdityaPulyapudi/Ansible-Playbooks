@@ -1,0 +1,12 @@
+# Utility: Manage crontab entries for user 'student'
+# Execution: ansible-navigator run crontab.yml -m stdout
+
+- name: Manage crontab
+  hosts: all
+  tasks:
+    - name: Add cron job
+      ansible.builtin.cron:
+        name: "Check disk space"
+        minute: "*/10"
+        job: "df -h > /tmp/disk_usage.txt"
+        user: student
