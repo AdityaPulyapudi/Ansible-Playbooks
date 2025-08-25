@@ -1,0 +1,14 @@
+# Utility: Generate hardware report on all servers
+# Execution: ansible-navigator run hwreport.yml -m stdout
+
+- name: Hardware report
+  hosts: all
+  tasks:
+    - name: Collect hardware info
+      ansible.builtin.command: lshw -short
+      register: hwout
+
+    - name: Save report to file
+      ansible.builtin.copy:
+        content: "{{ hwout.stdout }}"
+        dest: /root/hwreport.txt
