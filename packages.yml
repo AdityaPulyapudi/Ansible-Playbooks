@@ -1,0 +1,12 @@
+# Utility: Ensure software packages are installed on all systems
+# Execution: ansible-navigator run packages.yml -m stdout
+
+- name: Install required packages
+  hosts: all
+  tasks:
+    - name: Install httpd and firewalld
+      ansible.builtin.yum:
+        name:
+          - httpd
+          - firewalld
+        state: present
